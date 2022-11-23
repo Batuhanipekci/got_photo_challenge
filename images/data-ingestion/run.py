@@ -2,8 +2,6 @@
 
 import csv
 import sqlalchemy
-from sqlalchemy.exc import SQLAlchemyError
-
 from validations import validate_date, format_text
 
 # connect to the database
@@ -11,7 +9,7 @@ engine = sqlalchemy.create_engine("mysql://codetest:swordfish@database/codetest"
 try:
     connection = engine.connect()
     print("Connected to the database with success")
-except SQLAlchemyError as err:
+except sqlalchemy.exc.SQLAlchemyError as err:
     print("Database Connection Error", err.__cause__)
 
 metadata = sqlalchemy.schema.MetaData(engine)
@@ -24,7 +22,24 @@ Country = metadata.tables["country"]
 Person = metadata.tables["person"]
 
 
-def update_if_not_exists(connection, orm_object, feature_dict):
+def update_if_not_exists(
+    connection: sqlalchemy.engine.Engine,
+    orm_object: sqlalchemy.Table,
+    feature_dict: dict,
+) -> str:
+    """
+    Queries a table in the database given a feature_dict,
+        - if the entry exists, extracts the value list,
+        - else inserts the value
+        returns the primary key of the value.
+
+    :param connection: database connector
+    :type connection: sqlalchemy.engine.Engine
+    :param orm_object: ORM Table object to query the database
+    :type orm_object: sqlalchemy.Table
+    :param feature_dict: value properties to unpack into the query.
+    :type feature_dict: dict
+    """
     value = connection.execute(
         sqlalchemy.select(orm_object).filter_by(**feature_dict)
     ).all()
@@ -32,7 +47,6 @@ def update_if_not_exists(connection, orm_object, feature_dict):
         pk = connection.execute(
             orm_object.insert().values(**feature_dict)
         ).inserted_primary_key[0]
-        print(pk)
         return pk
     pk = value[0][0]
     return pk
@@ -55,6 +69,8 @@ with open("/data/places.csv") as csv_file:
             connection, City, {"name": city_name, "county_id": county_id}
         )
 
+
+# Read the people.csv into respective tables
 with open("/data/people.csv") as csv_file:
     reader = csv.reader(csv_file)
     next(reader)
