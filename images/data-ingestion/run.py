@@ -2,12 +2,16 @@
 
 import csv
 import sqlalchemy
+from sqlalchemy.exc import SQLAlchemyError
 
 from validations import validate_date, format_text
 # connect to the database
 engine = sqlalchemy.create_engine("mysql://codetest:swordfish@database/codetest")
-#session = sessionmaker(engine)
-connection = engine.connect()
+try:
+    connection = engine.connect()
+    print("Connected to the database with success")
+except SQLAlchemyError as err:
+    print("Database Connection Error", err.__cause__)
 
 metadata = sqlalchemy.schema.MetaData(engine)
 sqlalchemy.MetaData.reflect(metadata)
@@ -17,12 +21,6 @@ City = metadata.tables['city']
 County = metadata.tables['county']
 Country = metadata.tables['country']
 Person = metadata.tables['person']
-
-#City = sqlalchemy.schema.Table('city', metadata, autoload=True, autoload_with=engine)
-#County = sqlalchemy.schema.Table('county', metadata, autoload=True, autoload_with=engine)
-#Country = sqlalchemy.schema.Table('country', metadata, autoload=True, autoload_with=engine)
-#Person = sqlalchemy.schema.Table('person', metadata, autoload=True, autoload_with=engine)
-
 
 def update_if_not_exists(connection, orm_object, feature_dict):
   value = connection.execute(
