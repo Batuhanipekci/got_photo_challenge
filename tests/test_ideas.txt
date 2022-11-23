@@ -1,0 +1,3 @@
+- Test validations.py
+- Exception handling and testing for update_if_not_exists function
+- Integrity tests to the database (Check empty tables, invalied values, orphan fks etc.)
