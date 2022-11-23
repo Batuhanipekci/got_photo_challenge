@@ -1,10 +1,16 @@
 #!/usr/bin/env python
 
 import sqlalchemy
+from sqlalchemy.exc import SQLAlchemyError
 import json
 
 engine = sqlalchemy.create_engine("mysql://codetest:swordfish@database/codetest")
-connection = engine.connect()
+
+try:
+    connection = engine.connect()
+    print("Connected to the database with success")
+except SQLAlchemyError as err:
+    print("Database Connection Error", err.__cause__)
 
 metadata = sqlalchemy.schema.MetaData(engine)
 sqlalchemy.MetaData.reflect(metadata)

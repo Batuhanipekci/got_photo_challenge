@@ -2,12 +2,16 @@
 
 import csv
 import sqlalchemy
+from sqlalchemy.exc import SQLAlchemyError
 
 from validations import validate_date, format_text
 # connect to the database
 engine = sqlalchemy.create_engine("mysql://codetest:swordfish@database/codetest")
-#session = sessionmaker(engine)
-connection = engine.connect()
+try:
+    connection = engine.connect()
+    print("Connected to the database with success")
+except SQLAlchemyError as err:
+    print("Database Connection Error", err.__cause__)
 
 metadata = sqlalchemy.schema.MetaData(engine)
 sqlalchemy.MetaData.reflect(metadata)
