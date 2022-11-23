@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 
-def validate_str(s):
-    if not s.isalpha():
-        raise ValueError(f'{s} is not a proper text.')
-    return s
-
 def bytestring_to_unicode(text):
     if isinstance(text, bytes):
         return text.decode('utf-8')
