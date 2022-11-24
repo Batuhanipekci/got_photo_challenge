@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-
+"""
+This module contains validators and text formatters,
+which are used as helper functions while ingesting data.
+"""
 
 def bytestring_to_unicode(text: str) -> str:
     """
