@@ -1,40 +1,44 @@
 #!/usr/bin/env python
-
-import sqlalchemy
-from sqlalchemy.exc import SQLAlchemyError
+"""
+This module defines functionalities for summarizing
+data in the database and exporting the json output.
+"""
 import json
+import sqlalchemy
 
-engine = sqlalchemy.create_engine("mysql://codetest:swordfish@database/codetest")
+ENGINE = sqlalchemy.create_engine("mysql://codetest:swordfish@database/codetest")
 
 # connect to the database
 try:
-    connection = engine.connect()
+    CONNECTION = ENGINE.connect()
     print("Connected to the database with success")
-except SQLAlchemyError as err:
+except sqlalchemy.exc.SQLAlchemyError as err:
     print("Database Connection Error", err.__cause__)
 
-metadata = sqlalchemy.schema.MetaData(engine)
-sqlalchemy.MetaData.reflect(metadata)
+METADATA = sqlalchemy.schema.MetaData(ENGINE)
+sqlalchemy.MetaData.reflect(METADATA)
 
 # run prepared sql script to populate summary tables
+print("Reading the sql queries for summarizing data")
 with open("sql/insert.sql", "r") as sql:
-    query = sql.read()
+    QUERY = sql.read()
 
-    statements = [
-        statement for statement in query.split(";") if statement.strip() != ""
+    STATEMENTS = [
+        statement for statement in QUERY.split(";") if statement.strip() != ""
     ]
-    for statement in statements:
-        print(statement)
-        connection.execute(statement)
+    for statement in STATEMENTS:
+        CONNECTION.execute(statement)
 
 # make an ORM object to refer to the table
-CountrySummary = sqlalchemy.schema.Table(
-    "country_summary", metadata, autoload=True, autoload_with=engine
+COUNTRY_SUMMARY = sqlalchemy.schema.Table(
+    "country_summary", METADATA, autoload=True, autoload_with=ENGINE
 )
 
 # fetch the summary data from database and
 # output the table to a JSON file
+print("Extracting summary data")
 with open("/data/sample_output.json", "w") as json_file:
-    rows = connection.execute(sqlalchemy.sql.select([CountrySummary])).fetchall()
-    rows = {row[0]: row[1] for row in rows}
-    json.dump(rows, json_file, separators=(",", ":"))
+    DATA = CONNECTION.execute(sqlalchemy.sql.select([COUNTRY_SUMMARY])).fetchall()
+    ROWS = {row[0]: row[1] for row in DATA}
+    json.dump(ROWS, json_file, separators=(",", ":"))
+print("Success in extracting summary data! You can find the output under data folder.")
