@@ -29,5 +29,5 @@ services:
     build: images/data-summary
     command: ["./run.py"]
     volumes:
-      - ./apps/data-summary/sql:/sql
+      - ./images/data-summary/sql:/sql
       - ./data:/data
