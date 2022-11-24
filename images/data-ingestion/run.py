@@ -61,7 +61,6 @@ with open("/data/places.csv") as csv_file:
     READER = csv.reader(csv_file)
     next(READER)
     for row in READER:
-        print(f"row: {row}")
         city_name = format_text(row[0])
         county_name = format_text(row[1])
         country_name = format_text(row[2])
@@ -81,7 +80,6 @@ with open("/data/people.csv") as csv_file:
     READER = csv.reader(csv_file)
     next(READER)
     for row in READER:
-        print(f"row: {row}")
         given_name = format_text(row[0])
         family_name = format_text(row[1])
         date_of_birth = validate_date(row[2])
